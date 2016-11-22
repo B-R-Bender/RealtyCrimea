@@ -1,4 +1,4 @@
-package agency.realtycrimea.vk.api;
+package agency.realtycrimea.vk.model;
 
 import java.util.List;
 
@@ -111,7 +111,101 @@ public class vkProduct {
         this.mainPhotoId = mainPhotoId;
     }
 
+    /**
+     * Добавить продукт
+     *
+     * @return id добавленного продукта
+     */
     public Integer productAdd() {
         return null;
+    }
+
+    /**
+     * Изменить продукт
+     *
+     * @param product - продукт который нужно обновить в vk с уже обновленным содержанием
+     * @return 1 - в случае успеха, 205 - нет доступа, 1403 - продукт не найден
+     */
+    public Integer productEdit(vkProduct product) {
+        return null;
+    }
+
+    /**
+     * Изменить продукт
+     *
+     * @param product - продукт который нужно удалить
+     * @return 1 - в случае успеха, 205 - нет доступа
+     */
+    public Integer productDelete(vkProduct product) {
+        return null;
+    }
+
+    //геттеры и сеттеры
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public Integer getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Integer ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Float getPrice() {
+        return price;
+    }
+
+    public void setPrice(Float price) {
+        this.price = price;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Integer getMainPhotoId() {
+        return mainPhotoId;
+    }
+
+    public void setMainPhotoId(Integer mainPhotoId) {
+        this.mainPhotoId = mainPhotoId;
+    }
+
+    public List<Integer> getPhotoIds() {
+        return photoIds;
+    }
+
+    public void setPhotoIds(List<Integer> photoIds) {
+        this.photoIds = photoIds;
     }
 }
