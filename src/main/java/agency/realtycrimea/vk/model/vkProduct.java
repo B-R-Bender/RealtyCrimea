@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by Bender on 22.11.2016.
  */
-public class vkProduct {
+public class vkProduct extends vkObject {
 
     /**
      * Идентификатор товара.
