@@ -8,13 +8,12 @@ import agency.realtycrimea.network.interfaces.networkManager;
 public class xmlNetworkManager implements networkManager {
 
     @Override
-    public Object sendGetRequest() {
+    public Object sendGetRequest(SimpleRequest request) {
         return null;
     }
 
     @Override
-    public Object sendPostRequest() {
+    public Object sendPostRequest(SimpleRequest request) {
         return null;
     }
-
 }

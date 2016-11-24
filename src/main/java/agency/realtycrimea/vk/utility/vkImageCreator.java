@@ -9,7 +9,7 @@ import agency.realtycrimea.vk.utility.interfaces.vkObjectCreator;
 public class vkImageCreator implements vkObjectCreator {
 
     @Override
-    public vkImage fabricMethod() {
+    public vkImage fabricMethod(Object resource) {
         return null;
     }
 
