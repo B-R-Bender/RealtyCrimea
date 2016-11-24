@@ -1,11 +1,11 @@
 package agency.realtycrimea;
 
 import agency.realtycrimea.network.SimpleRequest;
-import agency.realtycrimea.network.vkNetworkManager;
-import agency.realtycrimea.network.xmlNetworkManager;
+import agency.realtycrimea.network.VkNetworkManager;
+import agency.realtycrimea.network.XmlNetworkManager;
 import agency.realtycrimea.vk.api.VkProductApiMethods;
-import agency.realtycrimea.vk.model.vkProduct;
-import agency.realtycrimea.vk.utility.vkProductCreator;
+import agency.realtycrimea.vk.model.VkProduct;
+import agency.realtycrimea.vk.utility.VkProductCreator;
 import agency.realtycrimea.vk.utility.VkSimpleRequestCreator;
 
 import java.io.InputStream;
@@ -20,16 +20,16 @@ public class structureTest {
         String url = "http://blabla.com";
         SimpleRequest xmlRequest = new SimpleRequest(url);
 
-        xmlNetworkManager xmlManager = new xmlNetworkManager();
-        InputStream is = (InputStream) xmlManager.sendGetRequest(xmlRequest);
+        XmlNetworkManager xmlNetworkManager = new XmlNetworkManager();
+        InputStream is = (InputStream) xmlNetworkManager.sendGetRequest(xmlRequest);
 
-        vkProductCreator productCreator = new vkProductCreator();
-        vkProduct vkProduct = productCreator.fabricMethod(is);
+        VkProductCreator productCreator = new VkProductCreator();
+        VkProduct vkProduct = productCreator.fabricMethod(is);
 
         VkSimpleRequestCreator requestCreator = new VkSimpleRequestCreator();
         SimpleRequest addRequest = requestCreator.fabricMethod(vkProduct, VkProductApiMethods.marketAdd);
 
-        vkNetworkManager vkManager = new vkNetworkManager();
+        VkNetworkManager vkManager = new VkNetworkManager();
         Integer serverResponse = (Integer) vkManager.sendGetRequest(addRequest);
     }
 

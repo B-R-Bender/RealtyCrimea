@@ -9,7 +9,7 @@ package agency.realtycrimea.vk.model;
  * <br>
  * Created by Bender on 24.11.2016.
  */
-public class VkImage extends VkAbstractObjectRename {
+public class VkImage extends VkAbstractObject {
 
     /**
      * Доступные для работы с vk.api форматы изображений:

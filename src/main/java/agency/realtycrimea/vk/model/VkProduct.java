@@ -7,7 +7,7 @@ import java.util.List;
  * <br>
  * Created by Bender on 22.11.2016.
  */
-public class VkProduct extends VkAbstractObjectRename {
+public class VkProduct extends VkAbstractObject {
 
     /**
      * Идентификатор товара.
@@ -124,7 +124,7 @@ public class VkProduct extends VkAbstractObjectRename {
     }
 
     /**
-     * Изменить продукт
+     * Удалить продукт
      *
      * @param product - продукт который нужно удалить
      * @return 1 - в случае успеха, 205 - нет доступа

@@ -1,7 +1,7 @@
 package agency.realtycrimea.vk.utility;
 
 import agency.realtycrimea.network.SimpleRequest;
-import agency.realtycrimea.vk.model.VkAbstractObjectRename;
+import agency.realtycrimea.vk.model.VkAbstractObject;
 import agency.realtycrimea.vk.utility.interfaces.VkRequestCreator;
 
 /**
@@ -9,7 +9,7 @@ import agency.realtycrimea.vk.utility.interfaces.VkRequestCreator;
  */
 public class VkSimpleRequestCreator implements VkRequestCreator {
     @Override
-    public SimpleRequest fabricMethod(VkAbstractObjectRename object, Enum apiMethod) {
+    public SimpleRequest fabricMethod(VkAbstractObject object, Enum apiMethod) {
         return null;
     }
 }
