@@ -9,7 +9,7 @@ package agency.realtycrimea.vk.model;
  * <br>
  * Created by Bender on 24.11.2016.
  */
-public class vkImage extends vkAbstractObject {
+public class VkImage extends VkAbstractObjectRename {
 
     /**
      * Доступные для работы с vk.api форматы изображений:
@@ -94,7 +94,7 @@ public class vkImage extends vkAbstractObject {
      * @param cropY координата для обрезки по Y
      * @param cropWidth желаемая ширина фотографии после обрезки
      */
-    public vkImage(Integer groupId, boolean mainPhoto, Character cropX, Character cropY, Character cropWidth) {
+    public VkImage(Integer groupId, boolean mainPhoto, Character cropX, Character cropY, Character cropWidth) {
         this.groupId = groupId;
         this.mainPhoto = mainPhoto;
         this.cropX = cropX;
@@ -114,7 +114,7 @@ public class vkImage extends vkAbstractObject {
      * @param cropHash хэш обрезки
      * @return переданный объект изображения с обновлёнными полями
      */
-    public vkImage addUploadData(vkImage image, String photo, Integer server, String hash, String cropData, String cropHash) {
+    public VkImage addUploadData(VkImage image, String photo, Integer server, String hash, String cropData, String cropHash) {
         image.photo = photo;
         image.server = server;
         image.hash = hash;

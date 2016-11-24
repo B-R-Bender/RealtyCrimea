@@ -7,7 +7,7 @@ import java.util.List;
  * <br>
  * Created by Bender on 22.11.2016.
  */
-public class vkProduct extends vkAbstractObject {
+public class VkProduct extends VkAbstractObjectRename {
 
     /**
      * Идентификатор товара.
@@ -81,7 +81,7 @@ public class vkProduct extends vkAbstractObject {
      * Конструктор товара по ID. Создает товар передавая АПИ id товара и получая от vk данные по товару.
      * @param productId id товара
      */
-    public vkProduct(Integer productId) {
+    public VkProduct(Integer productId) {
         this.productId = productId;
     }
 
@@ -95,7 +95,7 @@ public class vkProduct extends vkAbstractObject {
      * @param price         цена
      * @param mainPhotoId   id основного фото
      */
-    public vkProduct(Integer ownerId, String name, String description, Integer categoryId, Float price, Integer mainPhotoId) {
+    public VkProduct(Integer ownerId, String name, String description, Integer categoryId, Float price, Integer mainPhotoId) {
         this.ownerId = ownerId;
         this.name = name;
         this.description = description;
@@ -119,7 +119,7 @@ public class vkProduct extends vkAbstractObject {
      * @param product - продукт который нужно обновить в vk с уже обновленным содержанием
      * @return 1 - в случае успеха, 205 - нет доступа, 1403 - продукт не найден
      */
-    public Integer productEdit(vkProduct product) {
+    public Integer productEdit(VkProduct product) {
         return null;
     }
 
@@ -129,7 +129,7 @@ public class vkProduct extends vkAbstractObject {
      * @param product - продукт который нужно удалить
      * @return 1 - в случае успеха, 205 - нет доступа
      */
-    public Integer productDelete(vkProduct product) {
+    public Integer productDelete(VkProduct product) {
         return null;
     }
 

@@ -5,12 +5,12 @@ package agency.realtycrimea.vk.model;
  * <br>
  * Created by Bender on 23.11.2016.
  */
-public abstract class vkAbstractObject {
+public abstract class VkAbstractObjectRename {
 
     /**
      * Пустой конструктор по умолчанию при этом package-private.
      */
-    vkAbstractObject() {
+    VkAbstractObjectRename() {
     }
 
 }

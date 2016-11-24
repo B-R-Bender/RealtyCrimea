@@ -1,11 +1,11 @@
 package agency.realtycrimea.network;
 
-import agency.realtycrimea.network.interfaces.networkManager;
+import agency.realtycrimea.network.interfaces.NetworkManager;
 
 /**
  * Created by Bender on 22.11.2016.
  */
-public class xmlNetworkManager implements networkManager {
+public class XmlNetworkManager implements NetworkManager {
 
     @Override
     public Object sendGetRequest(SimpleRequest request) {
