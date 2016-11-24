@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Created by Bender on 23.11.2016.
  */
-public interface networkManager {
+public interface NetworkManager {
 
     /**
      * Метод, отправляющий Get запрос в сеть и возвращающий ответ сервера в виде java.lang.Object
