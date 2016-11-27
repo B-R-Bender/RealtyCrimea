@@ -1,9 +1,7 @@
 package agency.realtycrimea.network;
 
-import com.sun.xml.internal.bind.v2.TODO;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
@@ -19,14 +17,14 @@ public class SimpleRequest {
      * Перечисление типов отправляемого запроса
      */
     public enum RequestType {
-        post,
-        get;
+        POST,
+        GET;
     }
 
     /**
      * URL по которому должен уйти запрос
      */
-    private URL url;
+    private URI uri;
 
     /**
      * Мапа параметров запроса если они есть
@@ -43,11 +41,11 @@ public class SimpleRequest {
      * @param url на который должен уйти запрос
      * @param requestType тип создаваемого запроса
      */
-    public SimpleRequest(String url, RequestType requestType) {
+    public SimpleRequest(String uri, RequestType requestType) {
         try {
-            this.url = new URL(url);
+            this.uri = new URI(uri);
             this.type = requestType;
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException e) {
             //TODO: вывести ошибку в лог
         }
     }
@@ -56,8 +54,8 @@ public class SimpleRequest {
      * Получить URL запроса
      * @return строку с URL
      */
-    public URL getUrl() {
-        return url;
+    public URI getUri() {
+        return uri;
     }
 
     /**
