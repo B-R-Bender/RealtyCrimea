@@ -1,64 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Diagram>
   <ID>JAVA</ID>
-  <OriginalElement>agency.realtycrimea.network.vkNetworkManager</OriginalElement>
+  <OriginalElement />
   <nodes>
-    <node x="0.0" y="611.0">agency.realtycrimea.network.xmlNetworkManager</node>
-    <node x="476.75" y="0.0">agency.realtycrimea.vk.model.vkAbstractObject</node>
-    <node x="203.0" y="832.0">agency.realtycrimea.vk.utility.vkProductCreator</node>
-    <node x="113.0" y="487.0">agency.realtycrimea.network.interfaces.networkManager</node>
-    <node x="226.0" y="611.0">agency.realtycrimea.network.vkNetworkManager</node>
-    <node x="0.0" y="124.0">agency.realtycrimea.vk.model.vkImage</node>
-    <node x="0.0" y="832.0">agency.realtycrimea.vk.utility.vkImageCreator</node>
-    <node x="80.75" y="730.0">agency.realtycrimea.vk.utility.interfaces.vkObjectCreator</node>
-    <node x="608.0" y="102.0">agency.realtycrimea.vk.model.vkProduct</node>
+    <node x="0.0" y="124.0">agency.realtycrimea.vk.model.VkImage</node>
+    <node x="477.25" y="0.0">agency.realtycrimea.vk.model.VkAbstractObject</node>
+    <node x="-409.8036154478225" y="77.86154478225137">agency.realtycrimea.vk.utility.interfaces.VkRequestCreator</node>
+    <node x="0.0" y="611.0">agency.realtycrimea.network.XmlNetworkManager</node>
+    <node x="152.0" y="487.0">agency.realtycrimea.network.interfaces.NetworkManager</node>
+    <node x="-362.0603944124898" y="315.53861955628594">agency.realtycrimea.network.SimpleRequest</node>
+    <node x="784.0" y="487.0">agency.realtycrimea.vk.api.interfaces.VkApiMethod</node>
+    <node x="633.0" y="589.0">agency.realtycrimea.vk.api.VkImageApiMethods</node>
+    <node x="895.0" y="589.0">agency.realtycrimea.vk.api.VkProductApiMethods</node>
+    <node x="-409.8036154478225" y="179.86154478225137">agency.realtycrimea.vk.utility.VkSimpleRequestCreator</node>
+    <node x="304.0" y="611.0">agency.realtycrimea.network.VkNetworkManager</node>
+    <node x="-536.107230895645" y="614.9786359901397">agency.realtycrimea.vk.utility.VkImageCreator</node>
+    <node x="-297.10723089564505" y="614.9786359901397">agency.realtycrimea.vk.utility.VkProductCreator</node>
+    <node x="609.0" y="102.0">agency.realtycrimea.vk.model.VkProduct</node>
+    <node x="-437.35723089564505" y="512.9786359901397">agency.realtycrimea.vk.utility.interfaces.VkObjectCreator</node>
   </nodes>
   <notes />
   <edges>
-    <edge source="agency.realtycrimea.vk.utility.vkImageCreator" target="agency.realtycrimea.vk.utility.interfaces.vkObjectCreator">
-      <point x="0.0" y="-26.0" />
-      <point x="91.5" y="807.0" />
-      <point x="138.0" y="807.0" />
-      <point x="-57.25" y="26.0" />
+    <edge source="agency.realtycrimea.vk.api.VkProductApiMethods" target="agency.realtycrimea.vk.api.interfaces.VkApiMethod">
+      <point x="0.0" y="-48.0" />
+      <point x="972.0" y="564.0" />
+      <point x="902.5" y="564.0" />
+      <point x="39.5" y="26.0" />
     </edge>
-    <edge source="agency.realtycrimea.vk.model.vkImage" target="agency.realtycrimea.vk.model.vkAbstractObject">
+    <edge source="agency.realtycrimea.vk.utility.VkSimpleRequestCreator" target="agency.realtycrimea.vk.utility.interfaces.VkRequestCreator">
+      <point x="0.0" y="-26.0" />
+      <point x="0.0" y="26.0" />
+    </edge>
+    <edge source="agency.realtycrimea.vk.model.VkImage" target="agency.realtycrimea.vk.model.VkAbstractObject">
       <point x="0.0" y="-148.0" />
-      <point x="294.0" y="77.0" />
-      <point x="516.0" y="77.0" />
-      <point x="-39.25" y="26.0" />
+      <point x="294.5" y="77.0" />
+      <point x="516.75" y="77.0" />
+      <point x="-39.5" y="26.0" />
     </edge>
-    <edge source="agency.realtycrimea.network.xmlNetworkManager" target="agency.realtycrimea.network.interfaces.networkManager">
-      <point x="0.0" y="-37.0" />
-      <point x="103.0" y="586.0" />
-      <point x="164.5" y="586.0" />
-      <point x="-51.5" y="37.0" />
+    <edge source="agency.realtycrimea.vk.api.VkImageApiMethods" target="agency.realtycrimea.vk.api.interfaces.VkApiMethod">
+      <point x="0.0" y="-48.0" />
+      <point x="754.0" y="564.0" />
+      <point x="823.5" y="564.0" />
+      <point x="-39.5" y="26.0" />
     </edge>
-    <edge source="agency.realtycrimea.vk.utility.vkProductCreator" target="agency.realtycrimea.vk.utility.interfaces.vkObjectCreator">
-      <point x="0.0" y="-26.0" />
-      <point x="299.0" y="807.0" />
-      <point x="252.5" y="807.0" />
-      <point x="57.25" y="26.0" />
-    </edge>
-    <edge source="agency.realtycrimea.vk.model.vkProduct" target="agency.realtycrimea.vk.model.vkAbstractObject">
+    <edge source="agency.realtycrimea.vk.model.VkProduct" target="agency.realtycrimea.vk.model.VkAbstractObject">
       <point x="0.0" y="-170.0" />
-      <point x="816.5" y="77.0" />
-      <point x="594.5" y="77.0" />
-      <point x="39.25" y="26.0" />
+      <point x="818.0" y="77.0" />
+      <point x="595.75" y="77.0" />
+      <point x="39.5" y="26.0" />
     </edge>
-    <edge source="agency.realtycrimea.network.vkNetworkManager" target="agency.realtycrimea.network.interfaces.networkManager">
+    <edge source="agency.realtycrimea.network.XmlNetworkManager" target="agency.realtycrimea.network.interfaces.NetworkManager">
       <point x="0.0" y="-37.0" />
-      <point x="329.0" y="586.0" />
-      <point x="267.5" y="586.0" />
-      <point x="51.5" y="37.0" />
+      <point x="142.0" y="586.0" />
+      <point x="223.0" y="586.0" />
+      <point x="-71.0" y="37.0" />
+    </edge>
+    <edge source="agency.realtycrimea.network.VkNetworkManager" target="agency.realtycrimea.network.interfaces.NetworkManager">
+      <point x="0.0" y="-37.0" />
+      <point x="446.0" y="586.0" />
+      <point x="365.0" y="586.0" />
+      <point x="71.0" y="37.0" />
+    </edge>
+    <edge source="agency.realtycrimea.vk.utility.VkImageCreator" target="agency.realtycrimea.vk.utility.interfaces.VkObjectCreator">
+      <point x="0.0" y="-26.0" />
+      <point x="-426.60723089564505" y="589.9786359901397" />
+      <point x="-371.10723089564505" y="589.9786359901397" />
+      <point x="-66.25" y="26.0" />
+    </edge>
+    <edge source="agency.realtycrimea.vk.utility.VkProductCreator" target="agency.realtycrimea.vk.utility.interfaces.VkObjectCreator">
+      <point x="0.0" y="-26.0" />
+      <point x="-183.10723089564505" y="589.9786359901397" />
+      <point x="-238.60723089564505" y="589.9786359901397" />
+      <point x="66.25" y="26.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.9612831858407079" x="512.6098964326812" y="362.0" />
+  <settings layout="Hierarchic Group" zoom="1.0" x="256.0" y="342.5" />
   <SelectedNodes />
   <Categories>
-    <Category>Methods</Category>
-    <Category>Properties</Category>
     <Category>Fields</Category>
     <Category>Constructors</Category>
+    <Category>Properties</Category>
+    <Category>Methods</Category>
   </Categories>
   <SCOPE>All</SCOPE>
   <VISIBILITY>private</VISIBILITY>

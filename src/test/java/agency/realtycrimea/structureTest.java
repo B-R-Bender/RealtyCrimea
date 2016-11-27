@@ -17,7 +17,7 @@ public class structureTest {
 
     public static void main(String[] args) {
 
-        String url = "http://blabla.com";
+        String url = "http://www.realtycrimea.agency/exchange/export/yandex.php";
         SimpleRequest xmlRequest = new SimpleRequest(url);
 
         XmlNetworkManager xmlNetworkManager = new XmlNetworkManager();
