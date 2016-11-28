@@ -17,6 +17,13 @@ public class VkProduct extends VkAbstractObject {
     private Integer productId;
 
     /**
+     * Внутренний идентификатор товара.
+     * <br>
+     * определяет товар внутри собственной базы
+     */
+    private Integer innerProductId;
+
+    /**
      * Идентификатор владельца товара.
      * <br>
      * Идентификатор сообщества в параметре owner_id необходимо указывать со знаком "-" — например,
@@ -95,7 +102,8 @@ public class VkProduct extends VkAbstractObject {
      * @param price         цена
      * @param mainPhotoId   id основного фото
      */
-    public VkProduct(Integer ownerId, String name, String description, Integer categoryId, Float price, Integer mainPhotoId) {
+    public VkProduct(Integer innerProductId, Integer ownerId, String name, String description, Integer categoryId, Float price, Integer mainPhotoId) {
+        this.innerProductId = innerProductId;
         this.ownerId = ownerId;
         this.name = name;
         this.description = description;
@@ -136,6 +144,14 @@ public class VkProduct extends VkAbstractObject {
     //геттеры и сеттеры
     public Integer getProductId() {
         return productId;
+    }
+
+    public Integer getInnerProductId() {
+        return innerProductId;
+    }
+
+    public void setInnerProductId(Integer innerProductId) {
+        this.innerProductId = innerProductId;
     }
 
     public Integer getOwnerId() {
