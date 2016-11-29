@@ -21,25 +21,20 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Bender on 22.11.2016.
  */
 public class VkProductCreator implements VkObjectCreator {
 
-    Integer productInnerId;
-
-    Integer productOwnerId;
-
-    String productName;
-
-    String productDescription;
-
-    Integer productCategoryId;
-
-    Float productPrice;
-
-    Integer productMainPhotoId;
+    private enum XmlTags {
+        offer,
+        description,
+        price,
+        photo,
+        blank;
+    }
 
     @Override
     public List<VkProduct> fabricMethod(Object resource) {
@@ -83,28 +78,31 @@ public class VkProductCreator implements VkObjectCreator {
 
     private ArrayList<VkProduct> createProducts(Node node, ArrayList<VkProduct> productList) {
 
-        try {
-            SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
-            SaxHandlerImplementation handler = new SaxHandlerImplementation();
-            InputStream inputStreamFromNode = nodeToInputStream(node);
+        if (node == null) {
+            return productList;
+        } else if (node.getNodeName().equals("offer")) {
+            try {
+                SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+                SaxHandlerImplementation handler = new SaxHandlerImplementation();
+                InputStream inputStreamFromNode = nodeToInputStream(node);
 
-            parser.parse(inputStreamFromNode, handler);
+                parser.parse(inputStreamFromNode, handler);
 
-            VkProduct createdProduct = new VkProduct(productInnerId,
-                                                     productOwnerId,
-                                                     productName,
-                                                     productDescription,
-                                                     productCategoryId,
-                                                     productPrice,
-                                                     productMainPhotoId);
-            productList.add(createdProduct);
+                VkProduct createdProduct = new VkProduct(handler.productInnerId,
+                        handler.productOwnerId,
+                        handler.productName,
+                        handler.productDescription,
+                        handler.productCategoryId,
+                        handler.productPrice,
+                        handler.productMainPhotoId);
+                productList.add(createdProduct);
 
-        } catch (ParserConfigurationException | SAXException | TransformerException | IOException e) {
-            e.printStackTrace();
+            } catch (ParserConfigurationException | SAXException | TransformerException | IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        Node nextSibling = node.getNextSibling();
-        return nextSibling.getNodeName().equals("offer") ? createProducts(nextSibling, productList) : productList;
+        return createProducts(node.getNextSibling(), productList);
     }
 
     private InputStream nodeToInputStream(Node node) throws TransformerException {
@@ -117,6 +115,23 @@ public class VkProductCreator implements VkObjectCreator {
     }
 
     private class SaxHandlerImplementation extends DefaultHandler {
+
+        Integer productInnerId;
+
+        Integer productOwnerId;
+
+        String productName;
+
+        String productDescription;
+
+        Integer productCategoryId;
+
+        Float productPrice;
+
+        Integer productMainPhotoId;
+
+        XmlTags currentElement;
+
         @Override
         public void startDocument() throws SAXException {
             super.startDocument();
@@ -125,25 +140,83 @@ public class VkProductCreator implements VkObjectCreator {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             switch (qName) {
-                case "description" :
-                    productDescription = "test";
+                case "offer":
+                    currentElement = XmlTags.offer;
+                    int innerIdAttributeIndex = attributes.getIndex("internal-id");
+                    productInnerId = Integer.parseInt(attributes.getValue(innerIdAttributeIndex));
                     break;
+                case "description":
+                    currentElement = XmlTags.description;
+                    break;
+                case "price":
+                    currentElement = XmlTags.price;
+                    break;
+                case "photo":
+                    currentElement = XmlTags.photo;
+                    break;
+                default:
+                    currentElement = XmlTags.blank;
             }
         }
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
-            super.endElement(uri, localName, qName);
+            currentElement = XmlTags.blank;
         }
 
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
-            super.characters(ch, start, length);
+            switch (currentElement) {
+                case offer:
+                    break;
+                case description:
+                    productDescription = new String(ch, start, length);
+                    break;
+                case price:
+                    String priceString = new String(ch, start, length).trim();
+                    productPrice = priceString.isEmpty() ? 0 : Float.parseFloat(priceString);
+                    break;
+                case photo:
+                    //TODO: метод который должен грузить фото по урлу и возвращает его id
+                    productMainPhotoId = new Random().nextInt();
+                    break;
+                case blank:
+                    break;
+            }
         }
 
         @Override
         public void endDocument() throws SAXException {
             super.endDocument();
+        }
+
+        //геттеры свойств продукта
+        public Integer getProductInnerId() {
+            return productInnerId;
+        }
+
+        public Integer getProductOwnerId() {
+            return productOwnerId;
+        }
+
+        public String getProductName() {
+            return productName;
+        }
+
+        public String getProductDescription() {
+            return productDescription;
+        }
+
+        public Integer getProductCategoryId() {
+            return productCategoryId;
+        }
+
+        public Float getProductPrice() {
+            return productPrice;
+        }
+
+        public Integer getProductMainPhotoId() {
+            return productMainPhotoId;
         }
     }
 }
