@@ -5,4 +5,5 @@ package agency.realtycrimea.vk.api.interfaces;
  */
 public interface VkApiMethod {
     String getExactMethod();
+
 }

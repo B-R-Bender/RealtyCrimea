@@ -21,14 +21,14 @@ public class XmlNetworkManager implements NetworkManager {
     public Document sendRequest (SimpleRequest request) throws IllegalArgumentException {
         switch (Enum.valueOf(SimpleRequest.RequestType.class, request.getType().name())) {
             case POST:
-                return (Document) sendPostRequest(request);
+                return sendPostRequest(request);
             case GET:
-                return (Document) sendGetRequest(request);
+                return sendGetRequest(request);
         }
         throw new IllegalArgumentException("Bad request: unknown request type");
     }
 
-    public Object sendGetRequest(SimpleRequest request) {
+    private Document sendGetRequest(SimpleRequest request) {
         HttpGet getRequest = new HttpGet(request.getUri());
         Document document = null;
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -47,7 +47,7 @@ public class XmlNetworkManager implements NetworkManager {
     }
 
     //TODO: переписать под пост
-    public Object sendPostRequest(SimpleRequest request) {
+    private Document sendPostRequest(SimpleRequest request) {
         return sendGetRequest(request);
     }
 

@@ -33,7 +33,14 @@ public class VkProductCreator implements VkObjectCreator {
         description,
         price,
         photo,
+        value,
         blank;
+
+        private boolean elementValue;
+
+        XmlTags() {
+            elementValue = false;
+        }
     }
 
     @Override
@@ -154,8 +161,12 @@ public class VkProductCreator implements VkObjectCreator {
                 case "photo":
                     currentElement = XmlTags.photo;
                     break;
+                case "value":
+                    currentElement.elementValue = true;
+                    break;
                 default:
                     currentElement = XmlTags.blank;
+                    currentElement.elementValue = false;
             }
         }
 
@@ -170,11 +181,15 @@ public class VkProductCreator implements VkObjectCreator {
                 case offer:
                     break;
                 case description:
-                    productDescription = new String(ch, start, length);
+                    productDescription = productDescription == null
+                            ? new String(ch, start, length)
+                            : productDescription + new String(ch, start, length);
                     break;
                 case price:
-                    String priceString = new String(ch, start, length).trim();
-                    productPrice = priceString.isEmpty() ? 0 : Float.parseFloat(priceString);
+                    if (currentElement.elementValue) {
+                        String priceString = new String(ch, start, length).trim();
+                        productPrice = priceString.isEmpty() ? 0 : Float.parseFloat(priceString);
+                    }
                     break;
                 case photo:
                     //TODO: метод который должен грузить фото по урлу и возвращает его id

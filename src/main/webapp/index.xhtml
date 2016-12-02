@@ -4,8 +4,58 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-   <f:view>
-      <h:outputLabel value="Hello, world"/>
-   </f:view>
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+
+<h:body>
+
+    <div style="text-align: center; margin-top: 50px">
+        <h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>
+    </div>
+    <div style="text-align: center; margin-top: 150px">
+        <h:form id="loginForm">
+            <p:growl id="messages" showDetail="true" autoUpdate="true" sticky="true"/>
+
+            <h:panelGroup id="loginFormPanel" rendered="#{!loginController.loggedIn}">
+                <div style="display: inline-table; border: 1px solid #efa000; padding: 5px 30px 10px 30px">
+                    <div style="color: #efa000; margin-bottom: 30px; font-family: Arial, sans-serif; font-weight: bold">
+                        <h:outputText value="#{messages['index.login.caption']}"/>
+                    </div>
+
+                    <table cellspacing="10px">
+                        <tr>
+                            <td style="text-align: right; font-family: Arial, sans-serif">
+                                <h:outputText value="#{messages['index.login.user']}:"/>
+                            </td>
+                            <td>
+                                <p:inputText id="username" value="#{loginController.userName}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; font-family: Arial, sans-serif">#{messages['index.login.password']}:</td>
+                            <td><p:password id="passwd" value="#{loginController.password}"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: right; padding-top: 20px">
+                                <p:commandButton id="loginButton"
+                                                 action="#{loginController.login}"
+                                                 value="#{messages['index.login.buttons.submit']}"
+                                                 ajax="true"
+                                                 update="@form"/>
+                                <p:commandButton value="#{messages['index.login.buttons.clear']}">
+                                    <p:ajax update="@form" resetValues="true"/>
+                                </p:commandButton>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </div>
+
+</h:body>
+
 </html>
