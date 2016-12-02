@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+
+<h:body>
+
+    <div style="text-align: center; margin-top: 50px">
+        <h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>
+    </div>
+
+    <h:form>
+
+    <h:panelGroup id="loginSuccessPanel">
+        <p:panel id="registrationPanel" rendered="#{loginController.loggedIn}">
+            <h:outputText value="Hey hey it's all works >->-> "
+                          style="font-size: large; background-color: aquamarine"/>
+            <p:spacer height="10px"/>
+            <p:commandButton id="getCodeButton"
+                             ajax="false"
+                             value="#{messages['common.buttons.start']} -> "
+                             actionListener="#{loginController.exec()}"/>
+        </p:panel>
+    </h:panelGroup>
+
+    <h:panelGroup id="redirectPanel">
+        <p:panel id="mainWorkPanel" rendered="#{loginController.loggedIn}">
+            <h:outputText value="Hey hey it's all works >->-> "
+                          style="font-size: large; background-color: aquamarine"/>
+            <p:spacer height="10px"/>
+            <p:commandButton id="redirectStart"
+                             ajax="false"
+                             value="#{messages['common.buttons.start']} -> "
+                             actionListener="#{loginController.start()}"/>
+        </p:panel>
+    </h:panelGroup>
+
+</h:form>
+
+</h:body>
+
+</html>
