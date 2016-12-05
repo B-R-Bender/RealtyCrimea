@@ -8,20 +8,20 @@
       xmlns:p="http://primefaces.org/ui">
 
 <h:head>
+    <h:outputStylesheet library="css" name="custom.css"/>
 </h:head>
 
-<h:body>
-
+<h:body styleClass="custom_background">
     <div style="text-align: center; margin-top: 50px">
-        <h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>
+        <!--<h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>-->
     </div>
-    <div style="text-align: center; margin-top: 150px">
+    <div style="text-align: center; margin-top: 20%">
         <h:form id="loginForm">
-            <p:growl id="messages" showDetail="true" autoUpdate="true" sticky="true"/>
+            <p:growl id="messages" showDetail="true" autoUpdate="true"/>
 
             <h:panelGroup id="loginFormPanel" rendered="#{!loginController.loggedIn}">
-                <div style="display: inline-table; border: 1px solid #efa000; padding: 5px 30px 10px 30px">
-                    <div style="color: #efa000; margin-bottom: 30px; font-family: Arial, sans-serif; font-weight: bold">
+                <div style="display: inline-table; border: 2px solid burlywood; padding: 5px 30px 10px 30px">
+                    <div style="color: deepskyblue; margin-bottom: 30px; font-size: large; font-family: Tahoma, Arial, Verdana; font-weight: bold">
                         <h:outputText value="#{messages['index.login.caption']}"/>
                     </div>
 
@@ -41,8 +41,8 @@
                         <tr>
                             <td colspan="2" style="text-align: right; padding-top: 20px">
                                 <p:commandButton id="loginButton"
-                                                 action="#{loginController.login}"
                                                  value="#{messages['index.login.buttons.submit']}"
+                                                 actionListener="#{loginController.login}"
                                                  ajax="true"
                                                  update="@form"/>
                                 <p:commandButton value="#{messages['index.login.buttons.clear']}">

@@ -1,0 +1,4 @@
+.custom_background {
+    background-image:url("#{resource['images:vk-app.png']}");
+    background-size:100%;
+}

@@ -1,5 +1,8 @@
 package agency.realtycrimea.network;
 
+import agency.realtycrimea.vk.api.VkImageApiMethods;
+import agency.realtycrimea.vk.api.interfaces.VkApiMethod;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -45,6 +48,15 @@ public class SimpleRequest {
         try {
             this.uri = new URI(uri);
             this.type = requestType;
+        } catch (URISyntaxException e) {
+            //TODO: вывести ошибку в лог
+        }
+    }
+
+    public SimpleRequest(VkApiMethod method) {
+        try {
+            this.uri = new URI(method.getExactMethod());
+            this.type = method.getMethodRequestType();
         } catch (URISyntaxException e) {
             //TODO: вывести ошибку в лог
         }

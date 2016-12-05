@@ -8,42 +8,76 @@
       xmlns:p="http://primefaces.org/ui">
 
 <h:head>
+
 </h:head>
 
 <h:body>
-
-    <div style="text-align: center; margin-top: 50px">
-        <h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>
-    </div>
-
     <h:form>
 
-    <h:panelGroup id="loginSuccessPanel">
-        <p:panel id="registrationPanel" rendered="#{loginController.loggedIn}">
-            <h:outputText value="Hey hey it's all works >->-> "
-                          style="font-size: large; background-color: aquamarine"/>
-            <p:spacer height="10px"/>
-            <p:commandButton id="getCodeButton"
-                             ajax="false"
-                             value="#{messages['common.buttons.start']} -> "
-                             actionListener="#{loginController.exec()}"/>
-        </p:panel>
-    </h:panelGroup>
+        <p:layout id="mainLayout">
+            <p:layoutUnit position="north"
+                          header="Основная штука"
+                          resizable="false" closable="false" collapsible="true">
+                <div style="text-align: center">
+                    <p:panelGrid id="vkGridPanel" columns="2" style="!important;margin: 0 auto">
+                        <f:facet name="header">
+                            <h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>
+                        </f:facet>
+                        <p:commandButton id="getCodeButton"
+                                         ajax="false"
+                                         value="#{messages['common.buttons.yes']} -> "
+                                         actionListener="#{loginController.NOP}"/>
+                        <p:button id="button3" value="1321"/>
+                    </p:panelGrid>
+                </div>
+            </p:layoutUnit>
 
-    <h:panelGroup id="redirectPanel">
-        <p:panel id="mainWorkPanel" rendered="#{loginController.loggedIn}">
-            <h:outputText value="Hey hey it's all works >->-> "
-                          style="font-size: large; background-color: aquamarine"/>
-            <p:spacer height="10px"/>
-            <p:commandButton id="redirectStart"
-                             ajax="false"
-                             value="#{messages['common.buttons.start']} -> "
-                             actionListener="#{loginController.start()}"/>
-        </p:panel>
-    </h:panelGroup>
+            <p:layoutUnit position="west"
+                          header="Меню управления"
+                          rendered="#{loginController.isVkAuthorized()}"
+                          resizable="true" closable="false" collapsible="true">
+                <p:spacer height="10px"/>
+                <p:commandButton id="redirectStart"
+                                 ajax="false"
+                                 value="#{messages['common.buttons.start']} -> "
+                                 actionListener="#{loginController.start()}"/>
+                <p:spacer height="10px"/>
+            </p:layoutUnit>
 
-</h:form>
+            <p:layoutUnit position="center">
+                <p:dataTable id="productDataTable"
+                             paginator="true"
+                             rendered="#{loginController.isVkAuthorized()}"
+                             paginatorTemplate="{CurrentPageReport}
+                                                {FirstPageLink}
+                                                {PreviousPageLink}
+                                                {PageLinks}
+                                                {NextPageLink}
+                                                {LastPageLink}
+                                                {RowsPerPageDropdown}">
+                    <p:column headerText="Base id">
+                        111
+                    </p:column>
+                    <p:column headerText="VK id">
+                        111
+                    </p:column>
+                    <p:column headerText="Name">
+                        111
+                    </p:column>
+                    <p:column headerText="Price">
+                        111
+                    </p:column>
+                    <p:column headerText="Descr">
+                        111
+                    </p:column>
+                    <p:column headerText="Is changed">
+                        111
+                    </p:column>
+                </p:dataTable>
+            </p:layoutUnit>
+        </p:layout>
 
+    </h:form>
 </h:body>
 
 </html>

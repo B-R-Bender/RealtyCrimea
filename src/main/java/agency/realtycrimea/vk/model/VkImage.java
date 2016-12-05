@@ -30,7 +30,7 @@ public class VkImage extends VkAbstractObject {
      * <br>
      * <b>обязательный параметр для:</b> - photos.getMarketUploadServer
      */
-    private Integer groupId;
+    private String groupId;
 
     /**
      * Является ли фотография обложкой товара (1 — фотография для обложки, 0 — дополнительная фотография)
@@ -53,6 +53,11 @@ public class VkImage extends VkAbstractObject {
      * положительное число, <b>минимальное значение 400</b>
      */
     private Character cropWidth;
+
+    /**
+     * Адрес сервера для загрузки фотографии товара полученный в ответ на photos.getMarketUploadServer
+     */
+    private String uploadServerURI;
 
     /**
      * Параметр, возвращаемый в результате загрузки фотографии на сервер
@@ -94,12 +99,22 @@ public class VkImage extends VkAbstractObject {
      * @param cropY координата для обрезки по Y
      * @param cropWidth желаемая ширина фотографии после обрезки
      */
-    public VkImage(Integer groupId, boolean mainPhoto, Character cropX, Character cropY, Character cropWidth) {
+    public VkImage(String groupId, boolean mainPhoto, Character cropX, Character cropY, Character cropWidth) {
         this.groupId = groupId;
         this.mainPhoto = mainPhoto;
         this.cropX = cropX;
         this.cropY = cropY;
         this.cropWidth = cropWidth;
+    }
+
+    /**
+     * Добавить адрес сервера для загрузки изображения.
+     * <br>
+     * обязательно выполнить перед вызовом VkImageApiMethods.photoUpload
+     * @param uploadServerURI
+     */
+    public void addUploadServer(String uploadServerURI) {
+        this.uploadServerURI = uploadServerURI;
     }
 
     /**
@@ -124,11 +139,11 @@ public class VkImage extends VkAbstractObject {
     }
 
     //геттеры и сеттеры
-    public Integer getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
@@ -138,6 +153,10 @@ public class VkImage extends VkAbstractObject {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getUploadServerURI() {
+        return uploadServerURI;
     }
 
     public Integer getServer() {
