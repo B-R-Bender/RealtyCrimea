@@ -1,5 +1,9 @@
 package agency.realtycrimea.vk.model;
 
+import org.primefaces.json.JSONObject;
+
+import static agency.realtycrimea.vk.utility.AppProperty.properties;
+
 /**
  * Класс описывает изображение для работы с ним через vk.api
  * <br>
@@ -24,6 +28,11 @@ public class VkImage extends VkAbstractObject {
         availableFormats() {
         }
     }
+
+    /**
+     * Урл изображения с которого нужно загрузить картинку
+     */
+    private String imageURL;
 
     /**
      * Идентификатор группы фотографии
@@ -64,14 +73,14 @@ public class VkImage extends VkAbstractObject {
      * <br>
      * <b>обязательный параметр для:</b> - photos.saveMarketPhoto
      */
-    private String photo;
+    private Integer server;
 
     /**
      * Параметр, возвращаемый в результате загрузки фотографии на сервер
      * <br>
      * <b>обязательный параметр для:</b> - photos.saveMarketPhoto
      */
-    private Integer server;
+    private String photo;
 
     /**
      * Параметр, возвращаемый в результате загрузки фотографии на сервер
@@ -91,29 +100,65 @@ public class VkImage extends VkAbstractObject {
     private String cropHash;
 
     /**
+     * Объект загруженного изображения в формате vk - представляет собой JSON объект.
+     * <br>
+     * основные наименования полей:
+     * <ul>
+     *     <li>id</li>
+     *     <li>album_id</li>
+     *     <li>owner_id</li>
+     *     <li>user_id</li>
+     *     <li>text</li>
+     *     <li>date</li>
+     * </ul>
+     */
+    private JSONObject vkImageObject;
+
+    /**
      * Конструктор создаёт объект, который необходим для вызова photos.getMarketUploadServer
      *
-     * @param groupId идентификатор группы
-     * @param mainPhoto флаг - основное фото
-     * @param cropX координата для обрезки по X
-     * @param cropY координата для обрезки по Y
-     * @param cropWidth желаемая ширина фотографии после обрезки
+     * @param imageURL URL изображения откуда его нужно загрузить
+     * @param groupId идентификатор группы (если передан null - по умолачнию установит vk.group.id из файла свойств)
+     * @param mainPhoto флаг - основное фото (если передан null - по умолачнию установит false)
+     * @param cropX координата для обрезки по X (необязательный параметр)
+     * @param cropY координата для обрезки по Y (необязательный параметр)
+     * @param cropWidth желаемая ширина фотографии после обрезки (необязательный параметр)
      */
-    public VkImage(String groupId, boolean mainPhoto, Character cropX, Character cropY, Character cropWidth) {
-        this.groupId = groupId;
-        this.mainPhoto = mainPhoto;
+    public VkImage(String imageURL, String groupId, Boolean mainPhoto, Character cropX, Character cropY, Character cropWidth) {
+        this.imageURL = imageURL;
+        this.groupId = groupId == null ? properties.getProperty("vk.group.id") : groupId;
+        this.mainPhoto = mainPhoto == null ? false : mainPhoto;
         this.cropX = cropX;
         this.cropY = cropY;
         this.cropWidth = cropWidth;
     }
 
     /**
+     * Заполнить поля объекта из ответа сервера vk
+     * @param response ответ сервера в виде JSON объекта
+     */
+    public void applyServerResponse(JSONObject response) {
+        if (response.has("upload_url")) {
+            addUploadServer(response.getString("upload_url"));
+        } else if (response.has("server")) {
+            int server = response.getInt("server");
+            String photo = response.getString("photo");
+            String hash = response.getString("hash");
+            String cropData = response.getString("crop_data");
+            String cropHash = response.getString("crop_hash");
+            addUploadData(server, photo, hash, cropData, cropHash);
+        } else if (response.has("id")) {
+            this.vkImageObject = response;
+        }
+    }
+
+    /**
      * Добавить адрес сервера для загрузки изображения.
      * <br>
      * обязательно выполнить перед вызовом VkImageApiMethods.photoUpload
-     * @param uploadServerURI
+     * @param uploadServerURI URI сервера vk на который нужно загрузить изображение
      */
-    public void addUploadServer(String uploadServerURI) {
+    private void addUploadServer(String uploadServerURI) {
         this.uploadServerURI = uploadServerURI;
     }
 
@@ -127,32 +172,53 @@ public class VkImage extends VkAbstractObject {
      * @param hash хэш
      * @param cropData данные обрезки
      * @param cropHash хэш обрезки
-     * @return переданный объект изображения с обновлёнными полями
      */
-    public VkImage addUploadData(VkImage image, String photo, Integer server, String hash, String cropData, String cropHash) {
-        image.photo = photo;
-        image.server = server;
-        image.hash = hash;
-        image.cropData = cropData;
-        image.cropHash = cropHash;
-        return image;
+    private void addUploadData(Integer server, String photo, String hash, String cropData, String cropHash) {
+        this.photo = photo;
+        this.server = server;
+        this.hash = hash;
+        this.cropData = cropData;
+        this.cropHash = cropHash;
+    }
+
+    /**
+     * Переопреденённый toString покажет
+     *  <ui>
+     *     <li>id</li>
+     *     <li>album_id</li>
+     *     <li>owner_id</li>
+     *     <li>user_id</li>
+     *  </ui>
+     * @return
+     */
+    @Override
+    public String toString() {
+        return "VK ID: " + vkImageObject.get("id")
+                + "; VK ALBUM ID: " + vkImageObject.get("album_id")
+                + "; VK OWNER ID: " + vkImageObject.get("owner_id")
+                + "; VK USER ID: " + vkImageObject.get("user_id");
     }
 
     //геттеры и сеттеры
-    public String getGroupId() {
-        return groupId;
+
+    public Integer getVkPhotoId() {
+        return vkImageObject != null ? vkImageObject.getInt("id") : null;
+    }
+
+    public String getImageURL() {
+        return imageURL;
     }
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public String getPhoto() {
+        return photo;
     }
 
     public String getUploadServerURI() {
@@ -163,32 +229,16 @@ public class VkImage extends VkAbstractObject {
         return server;
     }
 
-    public void setServer(Integer server) {
-        this.server = server;
-    }
-
     public String getHash() {
         return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
     }
 
     public String getCropData() {
         return cropData;
     }
 
-    public void setCropData(String cropData) {
-        this.cropData = cropData;
-    }
-
     public String getCropHash() {
         return cropHash;
-    }
-
-    public void setCropHash(String cropHash) {
-        this.cropHash = cropHash;
     }
 
     public boolean isMainPhoto() {
@@ -203,23 +253,15 @@ public class VkImage extends VkAbstractObject {
         return cropX;
     }
 
-    public void setCropX(Character cropX) {
-        this.cropX = cropX;
-    }
-
     public Character getCropY() {
         return cropY;
-    }
-
-    public void setCropY(Character cropY) {
-        this.cropY = cropY;
     }
 
     public Character getCropWidth() {
         return cropWidth;
     }
 
-    public void setCropWidth(Character cropWidth) {
-        this.cropWidth = cropWidth;
+    public JSONObject getVkImageObject() {
+        return vkImageObject;
     }
 }

@@ -5,8 +5,7 @@ import agency.realtycrimea.network.VkNetworkManager;
 import agency.realtycrimea.vk.api.VkAuthMethods;
 import org.primefaces.json.JSONObject;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
+import org.apache.http.*;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +28,7 @@ public class AuthorizationFilter implements Filter {
 
         if (request.getParameter("code") != null) {
             VkAuthMethods.setCode(request.getParameter("code"));
-            SimpleRequest getTokenRequest = new SimpleRequest(VkAuthMethods.getAccessToken.getExactMethod(), SimpleRequest.RequestType.GET);
+            SimpleRequest getTokenRequest = new SimpleRequest(VkAuthMethods.getAccessToken);
             JSONObject vkApiResponseObject = new VkNetworkManager().sendRequest(getTokenRequest);
             if (vkApiResponseObject.has("error")) {
                 //TODO: перевести на страницу с ошибкой

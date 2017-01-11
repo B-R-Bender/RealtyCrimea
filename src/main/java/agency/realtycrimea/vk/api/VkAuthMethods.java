@@ -131,6 +131,10 @@ public enum VkAuthMethods implements VkApiMethod {
         return tokenExpiresIn;
     }
 
+    public static Long getVkUserId() {
+        return vkUserId;
+    }
+
     public static void setCode(String vkCode) {
         code = vkCode;
     }

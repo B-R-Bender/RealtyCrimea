@@ -1,5 +1,8 @@
 package agency.realtycrimea.vk.model;
 
+import agency.realtycrimea.vk.utility.AppProperty;
+import org.primefaces.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -66,7 +69,7 @@ public class VkProduct extends VkAbstractObject {
      * <br>
      * флаг, может принимать значения 1 или 0
      */
-    private boolean deleted;
+    private Boolean deleted;
 
     /**
      * Идентификатор фотографии обложки товара.
@@ -95,50 +98,50 @@ public class VkProduct extends VkAbstractObject {
     /**
      * Конструктор нового товара.
      *
-     * @param ownerId       id владельца товара
      * @param name          имя товара
      * @param description   описание
      * @param categoryId    id категории
      * @param price         цена
      * @param mainPhotoId   id основного фото
      */
-    public VkProduct(Integer innerProductId, Integer ownerId, String name, String description, Integer categoryId, Float price, Integer mainPhotoId) {
+    public VkProduct(Integer innerProductId,
+                     String name,
+                     String description,
+                     Integer categoryId,
+                     Float price,
+                     Integer mainPhotoId,
+                     List<Integer> photoIds) {
         this.innerProductId = innerProductId;
-        this.ownerId = ownerId;
+        this.ownerId = -Integer.parseInt(AppProperty.properties.getProperty("vk.group.id"));
         this.name = name;
         this.description = description;
         this.categoryId = categoryId;
         this.price = price;
         this.mainPhotoId = mainPhotoId;
+        this.photoIds = photoIds.size() != 0 ? photoIds : null;
     }
 
     /**
-     * Добавить продукт
-     *
-     * @return id добавленного продукта
+     * Заполнить поля объекта из ответа сервера vk
+     * @param response ответ сервера в виде JSON объекта
      */
-    public Integer productAdd() {
-        return null;
+    public void applyServerResponse(JSONObject response) {
+        if (response == null) {
+            //TODO: сделать нормальную обработку ошибку
+            System.out.println("Ошибка при применении ответа сервера");
+        } else if (response.has("market_item_id")) {
+            this.productId = response.getInt("market_item_id");
+        }
     }
 
-    /**
-     * Изменить продукт
-     *
-     * @param product - продукт который нужно обновить в vk с уже обновленным содержанием
-     * @return 1 - в случае успеха, 205 - нет доступа, 1403 - продукт не найден
-     */
-    public Integer productEdit(VkProduct product) {
-        return null;
-    }
-
-    /**
-     * Удалить продукт
-     *
-     * @param product - продукт который нужно удалить
-     * @return 1 - в случае успеха, 205 - нет доступа
-     */
-    public Integer productDelete(VkProduct product) {
-        return null;
+    @Override
+    public String toString() {
+        return "product id = " + productId
+                + "\nphotoId: " + mainPhotoId
+                + "\nname: " + name
+                + "\nprice: " + price
+                + "\ndescription: <" + (description.length() >= 50 ? description.substring(0,49) : description) + "...>"
+                + "\n";
     }
 
     //геттеры и сеттеры
@@ -194,11 +197,11 @@ public class VkProduct extends VkAbstractObject {
         this.price = price;
     }
 
-    public boolean isDeleted() {
+    public Boolean isDeleted() {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 

@@ -1,5 +1,7 @@
 package agency.realtycrimea.vk.utility;
 
+import agency.realtycrimea.vk.api.VkMethodsManager;
+import agency.realtycrimea.vk.model.VkImage;
 import agency.realtycrimea.vk.model.VkProduct;
 import agency.realtycrimea.vk.utility.interfaces.VkObjectCreator;
 import com.sun.org.apache.xerces.internal.dom.DeferredDocumentImpl;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static agency.realtycrimea.vk.utility.AppProperty.properties;
+
 /**
  * Created by Bender on 22.11.2016.
  */
@@ -30,22 +34,17 @@ public class VkProductCreator implements VkObjectCreator {
 
     private enum XmlTags {
         offer,
+        title,
         description,
         price,
         photo,
-        value,
+        category,
         blank;
-
-        private boolean elementValue;
-
-        XmlTags() {
-            elementValue = false;
-        }
     }
 
     @Override
     public List<VkProduct> fabricMethod(Object resource) {
-        List<VkProduct> createdVkProductList = null;
+        List<VkProduct> createdVkProductList;
 
         if (resource instanceof Integer) {
             createdVkProductList = createExistingProduct(((Integer) resource));
@@ -87,21 +86,28 @@ public class VkProductCreator implements VkObjectCreator {
 
         if (node == null) {
             return productList;
-        } else if (node.getNodeName().equals("offer")) {
+        }
+/*
+        //TODO: выпилить, заглушка чтобы не загружать больше n объектов
+        else if (productList.size() >= 3) {
+            return productList;
+        }
+*/
+        else if (node.getNodeName().equals("offer") && node.getAttributes().getNamedItem("internal-id").getNodeValue().equals("31871")) {
             try {
                 SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
                 SaxHandlerImplementation handler = new SaxHandlerImplementation();
                 InputStream inputStreamFromNode = nodeToInputStream(node);
 
                 parser.parse(inputStreamFromNode, handler);
-
-                VkProduct createdProduct = new VkProduct(handler.productInnerId,
-                        handler.productOwnerId,
+                VkProduct createdProduct = new VkProduct(
+                        handler.productInnerId,
                         handler.productName,
                         handler.productDescription,
                         handler.productCategoryId,
                         handler.productPrice,
-                        handler.productMainPhotoId);
+                        handler.productMainPhotoId,
+                        handler.photoIds);
                 productList.add(createdProduct);
 
             } catch (ParserConfigurationException | SAXException | TransformerException | IOException e) {
@@ -137,11 +143,13 @@ public class VkProductCreator implements VkObjectCreator {
 
         Integer productMainPhotoId;
 
+        List<Integer> photoIds;
+
         XmlTags currentElement;
 
         @Override
         public void startDocument() throws SAXException {
-            super.startDocument();
+            photoIds = new ArrayList<>();
         }
 
         @Override
@@ -152,21 +160,59 @@ public class VkProductCreator implements VkObjectCreator {
                     int innerIdAttributeIndex = attributes.getIndex("internal-id");
                     productInnerId = Integer.parseInt(attributes.getValue(innerIdAttributeIndex));
                     break;
-                case "description":
+                case "title-market-vk":
+                    currentElement = XmlTags.title;
+                    break;
+                case "description-market-vk":
                     currentElement = XmlTags.description;
                     break;
-                case "price":
+                case "cost-market-vk":
                     currentElement = XmlTags.price;
                     break;
-                case "photo":
-                    currentElement = XmlTags.photo;
+                case "category":
+                    currentElement = XmlTags.category;
                     break;
-                case "value":
-                    currentElement.elementValue = true;
+                case "image":
+                    currentElement = XmlTags.photo;
                     break;
                 default:
                     currentElement = XmlTags.blank;
-                    currentElement.elementValue = false;
+            }
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            switch (currentElement) {
+                case title:
+                    productName = new String(ch, start, length).trim();
+                    break;
+                case description:
+                    productDescription = productDescription == null
+                            ? new String(ch, start, length).trim()
+                            : productDescription + new String(ch, start, length);
+                    break;
+                case price:
+                    String priceString = new String(ch, start, length).trim();
+                    productPrice = priceString.isEmpty() ? 0 : Float.parseFloat(priceString);
+                    break;
+                case photo:
+                    //TODO: добавить ватермарк
+                    if (productMainPhotoId == null || photoIds.size() < 5) {
+                        String url = new String(ch, start, length).trim();
+                        VkImage vkImage = new VkImage(url, properties.getProperty("vk.group.id"), true, null, null, null);
+                        Integer photoId = VkMethodsManager.getInstance().saveImageForProduct(vkImage);
+                        if (productMainPhotoId == null) {
+                            productMainPhotoId = photoId;
+                        } else {
+                            photoIds.add(photoId);
+                        }
+                    }
+                    break;
+                case category:
+                    setUpProductCategory(new String(ch, start, length).trim());
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -175,34 +221,41 @@ public class VkProductCreator implements VkObjectCreator {
             currentElement = XmlTags.blank;
         }
 
-        @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            switch (currentElement) {
-                case offer:
-                    break;
-                case description:
-                    productDescription = productDescription == null
-                            ? new String(ch, start, length)
-                            : productDescription + new String(ch, start, length);
-                    break;
-                case price:
-                    if (currentElement.elementValue) {
-                        String priceString = new String(ch, start, length).trim();
-                        productPrice = priceString.isEmpty() ? 0 : Float.parseFloat(priceString);
-                    }
-                    break;
-                case photo:
-                    //TODO: метод который должен грузить фото по урлу и возвращает его id
-                    productMainPhotoId = new Random().nextInt();
-                    break;
-                case blank:
-                    break;
-            }
-        }
-
+/*
         @Override
         public void endDocument() throws SAXException {
             super.endDocument();
+        }
+*/
+
+        /**
+         * Устанавливает категорию товара в зависимоти от значения тега category
+         * @param category значение тега category
+         */
+        private void setUpProductCategory(String category) {
+            switch (category) {
+                case "квартира":
+                    productCategoryId = Integer.parseInt(properties.getProperty("vk.category.id.apartments"));
+                    break;
+                case "комната":
+                    productCategoryId = Integer.parseInt(properties.getProperty("vk.category.id.rooms"));
+                    break;
+                case "дом":
+                    productCategoryId = Integer.parseInt(properties.getProperty("vk.category.id.houses"));
+                    break;
+                case "гараж":
+                    productCategoryId = Integer.parseInt(properties.getProperty("vk.category.id.garages"));
+                    break;
+                case "участок":
+                    productCategoryId = Integer.parseInt(properties.getProperty("vk.category.id.lands"));
+                    break;
+                case "коммерческая":
+                    productCategoryId = Integer.parseInt(properties.getProperty("vk.category.id.commercial"));
+                    break;
+                case "зарубежная":
+                    productCategoryId = Integer.parseInt(properties.getProperty("vk.category.id.overseas"));
+                    break;
+            }
         }
 
         //геттеры свойств продукта

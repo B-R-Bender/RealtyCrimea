@@ -3,8 +3,10 @@ package agency.realtycrimea.network;
 import agency.realtycrimea.vk.api.VkImageApiMethods;
 import agency.realtycrimea.vk.api.interfaces.VkApiMethod;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -32,7 +34,7 @@ public class SimpleRequest {
     /**
      * Мапа параметров запроса если они есть
      */
-    private Map requestParametersMap;
+    private Map<String, Object> requestParametersMap;
 
     /**
      * Конкретный тип запроса
@@ -50,6 +52,7 @@ public class SimpleRequest {
             this.type = requestType;
         } catch (URISyntaxException e) {
             //TODO: вывести ошибку в лог
+            System.out.println(e.getMessage());
         }
     }
 
@@ -57,8 +60,12 @@ public class SimpleRequest {
         try {
             this.uri = new URI(method.getExactMethod());
             this.type = method.getMethodRequestType();
+            if (method.getMethodRequestType().equals(RequestType.POST)) {
+                this.requestParametersMap = method.getAndClearMethodParameters();
+            }
         } catch (URISyntaxException e) {
             //TODO: вывести ошибку в лог
+            System.out.println(e.getMessage());
         }
     }
 
@@ -82,7 +89,7 @@ public class SimpleRequest {
      * Получить мапус с параметрами запроса
      * @return мапа с параметрами запроса
      */
-    public Map getRequestParametersMap() {
+    public Map<String, Object> getRequestParametersMap() {
         return requestParametersMap;
     }
 

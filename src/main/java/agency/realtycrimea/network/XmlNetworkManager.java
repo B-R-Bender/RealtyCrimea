@@ -39,8 +39,12 @@ public class XmlNetworkManager implements NetworkManager {
             document = documentBuilder.parse(content);
 
         } catch (Exception e) {
+            //TODO: логирование ошибки
+            System.out.println(e.toString());
+/*
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка.", e.getMessage()));
+*/
         }
 
         return document;

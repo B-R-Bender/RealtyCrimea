@@ -4,6 +4,22 @@ import agency.realtycrimea.network.SimpleRequest;
 import agency.realtycrimea.vk.api.interfaces.VkApiMethod;
 import agency.realtycrimea.vk.model.VkImage;
 import agency.realtycrimea.vk.utility.AppProperty;
+import com.sun.webkit.network.URLs;
+import org.apache.http.entity.ContentType;
+import org.primefaces.component.watermark.Watermark;
+import sun.plugin2.message.helper.URLHelper;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Bender on 24.11.2016.
@@ -37,11 +53,12 @@ public enum VkImageApiMethods implements VkApiMethod {
         }
     },
     /**
-     * Метод для получения URI сервера vk для загрузки фото
+     * Метод для загрузки изображения на сервер vk
      */
     photoUpload {
         @Override
         public String getExactMethod() {
+            setParameters();
             return getMethodName();
         }
 
@@ -50,13 +67,46 @@ public enum VkImageApiMethods implements VkApiMethod {
             return currentImage.getUploadServerURI();
         }
 
+        private void setParameters() {
+            File tempFileForUpload = null;
+            try {
+                tempFileForUpload = new File("temp.jpg");
+                InputStream stream = VkImageApiMethods.class.getClassLoader().getResourceAsStream("watermark.png");
+
+                BufferedImage sourceImage = ImageIO.read(URLs.newURL(currentImage.getImageURL()));
+                BufferedImage watermarkImage = ImageIO.read(stream);
+
+                // initializes necessary graphic properties
+                Graphics2D g2d = (Graphics2D) sourceImage.getGraphics();
+                AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+                g2d.setComposite(alphaChannel);
+
+                // calculates the coordinate where the image is painted
+                int topLeftX = (sourceImage.getWidth() - watermarkImage.getWidth()) / 2;
+                int topLeftY = (sourceImage.getHeight() - watermarkImage.getHeight()) / 2;
+
+                // paints the image watermark
+                g2d.drawImage(watermarkImage, topLeftX, topLeftY, null);
+
+                ImageIO.write(sourceImage, "jpg", tempFileForUpload);
+                g2d.dispose();
+            } catch (IOException e) {
+                //TODO: error to log
+                e.printStackTrace();
+                tempFileForUpload.delete();
+            }
+
+            methodParameters.put("contentType", ContentType.MULTIPART_FORM_DATA);
+            methodParameters.put("file", tempFileForUpload);
+        }
+
         @Override
         public SimpleRequest.RequestType getMethodRequestType() {
             return SimpleRequest.RequestType.POST;
         }
     },
     /**
-     * Метод для загрузки изображения на сервер vk
+     * Метод для сохранения загруженного фото как фото товара
      */
     photosSaveMarketPhoto {
         @Override
@@ -74,13 +124,40 @@ public enum VkImageApiMethods implements VkApiMethod {
         }
 
         private String getParameterString() {
-            return "group_id=" + AppProperty.properties.getProperty("vk.group.id")
-                    + "&photo=" + currentImage.getPhoto()
-                    + "&server=" + currentImage.getServer()
-                    + "&hash=" + currentImage.getHash()
-                    + (currentImage.getCropData() != null ? "&crop_data=" + currentImage.getCropData() : "")
-                    + (currentImage.getCropHash() != null ? "&crop_hash=" + currentImage.getCropHash() : "");
+            try {
+                return "group_id=" + AppProperty.properties.getProperty("vk.group.id")
+                        + "&photo=" + URLEncoder.encode(currentImage.getPhoto(), "UTF-8")
+                        + "&server=" + currentImage.getServer()
+                        + "&hash=" + currentImage.getHash()
+                        + (currentImage.getCropData() != null ? "&crop_data=" + currentImage.getCropData() : "")
+                        + (currentImage.getCropHash() != null ? "&crop_hash=" + currentImage.getCropHash() : "");
+            } catch (UnsupportedEncodingException e) {
+                //TODO: error to log
+                e.printStackTrace();
+            }
+            return "";
         }
+    },
+    photoDelete{
+        @Override
+        public String getExactMethod() {
+            return String.format(VkApiMethod.BASE_API_METHOD,
+                    getMethodName(),
+                    getParameterString(),
+                    VkAuthMethods.getToken(),
+                    AppProperty.properties.getProperty("vk.api.version"));
+        }
+
+        @Override
+        public String getMethodName() {
+            return "photos.delete";
+        }
+
+        private String getParameterString() {
+            return "owner_id=" + currentImage.getVkImageObject().get("owner_id")
+                    + "&photo_id=" + currentImage.getVkImageObject().get("id");
+        }
+
     };
 
     private static VkImage currentImage;
