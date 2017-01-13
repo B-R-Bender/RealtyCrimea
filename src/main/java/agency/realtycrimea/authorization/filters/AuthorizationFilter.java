@@ -32,6 +32,7 @@ public class AuthorizationFilter implements Filter {
             JSONObject vkApiResponseObject = new VkNetworkManager().sendRequest(getTokenRequest);
             if (vkApiResponseObject.has("error")) {
                 //TODO: перевести на страницу с ошибкой
+                System.out.println(request);
             } else {
                 VkAuthMethods.setToken(vkApiResponseObject.getString("access_token"));
                 VkAuthMethods.setVkUserId(vkApiResponseObject.getLong("user_id"));

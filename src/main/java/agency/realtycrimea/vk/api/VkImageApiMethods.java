@@ -6,8 +6,6 @@ import agency.realtycrimea.vk.model.VkImage;
 import agency.realtycrimea.vk.utility.AppProperty;
 import com.sun.webkit.network.URLs;
 import org.apache.http.entity.ContentType;
-import org.primefaces.component.watermark.Watermark;
-import sun.plugin2.message.helper.URLHelper;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -16,10 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Bender on 24.11.2016.
@@ -69,27 +64,35 @@ public enum VkImageApiMethods implements VkApiMethod {
 
         private void setParameters() {
             File tempFileForUpload = null;
-            try {
+            String groupId = currentImage.getGroupId();
+            groupId = groupId.charAt(0) == '-' ? groupId.substring(1) : groupId;
+
+            try (InputStream watermarkStream = VkImageApiMethods.class.getClassLoader().getResourceAsStream("watermarks/" + groupId + ".png");) {
                 tempFileForUpload = new File("temp.jpg");
-                InputStream stream = VkImageApiMethods.class.getClassLoader().getResourceAsStream("watermark.png");
-
                 BufferedImage sourceImage = ImageIO.read(URLs.newURL(currentImage.getImageURL()));
-                BufferedImage watermarkImage = ImageIO.read(stream);
 
-                // initializes necessary graphic properties
-                Graphics2D g2d = (Graphics2D) sourceImage.getGraphics();
-                AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-                g2d.setComposite(alphaChannel);
+                if (watermarkStream != null) {
+                    BufferedImage watermarkImage = ImageIO.read(watermarkStream);
 
-                // calculates the coordinate where the image is painted
-                int topLeftX = (sourceImage.getWidth() - watermarkImage.getWidth()) / 2;
-                int topLeftY = (sourceImage.getHeight() - watermarkImage.getHeight()) / 2;
+                    // initializes necessary graphic properties
+                    Graphics2D g2d = (Graphics2D) sourceImage.getGraphics();
+                    AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+                    g2d.setComposite(alphaChannel);
 
-                // paints the image watermark
-                g2d.drawImage(watermarkImage, topLeftX, topLeftY, null);
+                    // calculates the coordinate where the image is painted
+                    int topLeftX = (sourceImage.getWidth() - watermarkImage.getWidth()) / 2;
+                    int topLeftY = (sourceImage.getHeight() - watermarkImage.getHeight()) / 2;
 
-                ImageIO.write(sourceImage, "jpg", tempFileForUpload);
-                g2d.dispose();
+                    // paints the image watermark
+                    g2d.drawImage(watermarkImage, topLeftX, topLeftY, null);
+                    ImageIO.write(sourceImage, "jpg", tempFileForUpload);
+                    g2d.dispose();
+                } else {
+                    //TODO: сообщение о том что беда с наложением ватермарка
+                    System.out.println("Ватермарк не наложился");
+                    ImageIO.write(sourceImage, "jpg", tempFileForUpload);
+                }
+
             } catch (IOException e) {
                 //TODO: error to log
                 e.printStackTrace();

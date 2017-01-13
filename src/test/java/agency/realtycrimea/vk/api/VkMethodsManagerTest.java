@@ -20,24 +20,35 @@ public class VkMethodsManagerTest {
 
     @BeforeClass
     public static void init() {
-        VkAuthMethods.setToken("6e2b7011f2e30a63b0d0db1c443f690782ec4e11dda956a0f736527ffb436db95bd4a31de569712b5ad57");
+        VkAuthMethods.setToken("ff1d5eed82f14ff8326c693d896032a741db87460d172e51869e6dbfa407c0541811005312e3467f6e912");
         String xmlURI = "http://www.realtycrimea.agency/exchange/export/vk-group-export.php";
         SimpleRequest xmlRequest = new SimpleRequest(xmlURI, SimpleRequest.RequestType.GET);
         XmlNetworkManager xmlNetworkManager = new XmlNetworkManager();
         Document xmlDocument = xmlNetworkManager.sendRequest(xmlRequest);
 
         VkProductCreator productCreator = new VkProductCreator();
-        vkProduct = productCreator.fabricMethod(xmlDocument);
+        List<VkProduct> productList = productCreator.createProducts(xmlDocument).getProductsFor(null, null);
+
+        Assert.assertTrue(productList.size() != 0);
+
+        vkProduct = productList;
     }
 
     @Test
     public void productAddTest() {
-        VkMethodsManager manager = VkMethodsManager.getInstance();
+        Assert.assertTrue(vkProduct != null && vkProduct.size() > 0);
 
-        Assert.assertTrue(vkProduct.size() > 0);
+        boolean addProduct = VkMethodsManager.getInstance().addProduct(vkProduct.get(0));
 
-        boolean addProduct = manager.addProduct(vkProduct.get(0));
+        System.out.println("Product:\n" + vkProduct.get(0) + "\nadded successful? - " + addProduct);
+    }
 
-        System.out.println("Product:\n" + vkProduct.get(0) + "\n added successful: " + addProduct);
+    @Test
+    public void productDeleteTest() {
+        Assert.assertTrue(vkProduct != null && vkProduct.size() > 0 && vkProduct.get(0).getProductId() != null);
+
+        boolean deleteProduct = VkMethodsManager.getInstance().deleteProduct(vkProduct.get(0));
+
+        System.out.println("Product:\n" + vkProduct.get(0) + "\ndeleted successful? - " + deleteProduct);
     }
 }

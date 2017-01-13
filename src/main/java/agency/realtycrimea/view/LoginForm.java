@@ -86,7 +86,7 @@ public class LoginForm {
 //        Document xmlDocument = xmlNetworkManager.sendRequest(xmlRequest);
 //
 //        VkProductCreator productCreator = new VkProductCreator();
-//        List<VkProduct> vkProduct = productCreator.fabricMethod(xmlDocument);
+//        List<VkProduct> vkProduct = productCreator.createProducts(xmlDocument);
     }
 
     public boolean isVkAuthorized() {

@@ -3,6 +3,7 @@ package agency.realtycrimea.vk.model;
 import agency.realtycrimea.vk.utility.AppProperty;
 import org.primefaces.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,18 +14,32 @@ import java.util.List;
 public class VkProduct extends VkAbstractObject {
 
     /**
-     * Идентификатор товара.
-     * <br>
-     * Возвращается после успешного добавления товара.
-     */
-    private Integer productId;
-
-    /**
      * Внутренний идентификатор товара.
      * <br>
      * определяет товар внутри собственной базы
      */
     private Integer innerProductId;
+
+    /**
+     * Идентификатор типа использования товара.
+     * <br>
+     * определяет тип использования товара внутри собственной базы
+     */
+    private String productType;
+
+    /**
+     * Идентификатор типа товара.
+     * <br>
+     * определяет товар внутри собственной базы
+     */
+    private String productPropertyType;
+
+    /**
+     * Идентификатор товара.
+     * <br>
+     * Возвращается после успешного добавления товара.
+     */
+    private Integer productId;
 
     /**
      * Идентификатор владельца товара.
@@ -80,12 +95,26 @@ public class VkProduct extends VkAbstractObject {
     private Integer mainPhotoId;
 
     /**
+     * URI фотографии обложки товара.
+     * <br>
+     * Фотография должна быть загружена с помощью метода photos.getMarketUploadServer, передав параметр main_photo.
+     */
+    private String mainPhotoURI;
+
+    /**
      * Идентификаторы дополнительных фотографий товара.
      * <br>
      * Фотография должна быть загружена с помощью метода photos.getMarketUploadServer.
      * список положительных чисел, разделенных запятыми, количество элементов должно составлять не более 4
      */
     private List<Integer> photoIds;
+
+    /**
+     * Список URI дополнительных фотографий товара.
+     * <br>
+     * Фотография должна быть загружена с помощью метода photos.getMarketUploadServer.
+     */
+    private List<String> photosURI;
 
     /**
      * Конструктор товара по ID. Создает товар передавая АПИ id товара и получая от vk данные по товару.
@@ -96,7 +125,7 @@ public class VkProduct extends VkAbstractObject {
     }
 
     /**
-     * Конструктор нового товара.
+     * Конструктор нового товара c передачей ID уже загруженных фотографий
      *
      * @param name          имя товара
      * @param description   описание
@@ -104,6 +133,7 @@ public class VkProduct extends VkAbstractObject {
      * @param price         цена
      * @param mainPhotoId   id основного фото
      */
+    @Deprecated
     public VkProduct(Integer innerProductId,
                      String name,
                      String description,
@@ -119,6 +149,37 @@ public class VkProduct extends VkAbstractObject {
         this.price = price;
         this.mainPhotoId = mainPhotoId;
         this.photoIds = photoIds.size() != 0 ? photoIds : null;
+    }
+
+    /**
+     * Конструктор нового товара.
+     *
+     * @param name          имя товара
+     * @param description   описание
+     * @param categoryId    id категории
+     * @param price         цена
+     * @param mainPhotoURI  URI основного фото
+     * @param photosURI     URI дополнительных фото
+     */
+    public VkProduct(Integer innerProductId,
+//                     Integer ownerId,
+                     String name,
+                     String description,
+                     Integer categoryId,
+                     Float price,
+                     String mainPhotoURI,
+                     List<String> photosURI) {
+        this.innerProductId = innerProductId;
+//        this.ownerId = -ownerId;
+        this.name = name;
+        this.description = description;
+        this.categoryId = categoryId;
+        this.price = price;
+        this.mainPhotoURI= mainPhotoURI;
+        if (photosURI.size() != 0) {
+            this.photosURI = photosURI;
+            this.photoIds = new ArrayList<>();
+        }
     }
 
     /**
@@ -157,12 +218,28 @@ public class VkProduct extends VkAbstractObject {
         this.innerProductId = innerProductId;
     }
 
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public String getProductPropertyType() {
+        return productPropertyType;
+    }
+
+    public void setProductPropertyType(String productPropertyType) {
+        this.productPropertyType = productPropertyType;
+    }
+
     public Integer getOwnerId() {
         return ownerId;
     }
 
     public void setOwnerId(Integer ownerId) {
-        this.ownerId = ownerId;
+        this.ownerId = -ownerId;
     }
 
     public String getName() {
@@ -219,5 +296,21 @@ public class VkProduct extends VkAbstractObject {
 
     public void setPhotoIds(List<Integer> photoIds) {
         this.photoIds = photoIds;
+    }
+
+    public String getMainPhotoURI() {
+        return mainPhotoURI;
+    }
+
+    public void setMainPhotoURI(String mainPhotoURI) {
+        this.mainPhotoURI = mainPhotoURI;
+    }
+
+    public List<String> getPhotosURI() {
+        return photosURI;
+    }
+
+    public void setPhotosURI(List<String> photosURI) {
+        this.photosURI = photosURI;
     }
 }

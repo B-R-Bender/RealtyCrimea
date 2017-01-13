@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface VkObjectCreator {
 
-    List<? extends VkAbstractObject> fabricMethod(Object resource);
+    VkObjectCreator createProducts(Object resource);
 
 }

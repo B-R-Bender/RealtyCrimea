@@ -32,18 +32,47 @@ import static agency.realtycrimea.vk.utility.AppProperty.properties;
  */
 public class VkProductCreator implements VkObjectCreator {
 
+    /**
+     * Энум используется в имплементации хендлера sax для хранения текущего элемента
+     */
     private enum XmlTags {
         offer,
         title,
         description,
         price,
         photo,
+        type,
+        propertyType,
         category,
         blank;
     }
 
+//    private final Integer ownerId;
+    
+    private List<VkProduct> vkProductList;
+
+/*
+    private VkProductCreator() {
+        ownerId = null;
+    }
+
+    public VkProductCreator(Integer ownerId) {
+        this.ownerId = ownerId;
+    }
+*/
+
+    /**
+     * Фабрика для создания продуктов vk. На вход получет ресурс который может быть:
+     * <ul>
+     *     <li>{@link Integer} - для создания продукта по его item_id из vk api</li>
+     *     <li>{@link List} of  {@link Integer} - для создания списка продуктов по item_id из vk api</li>
+     *     <li>{@link Document} - для создания продукта(ов) по xml-документу</li>
+     * </ul>
+     * получить список продуктов для конкретной группы можно через метод {@link VkProductCreator#getProductsFor(String, String)}
+     * @throws IllegalArgumentException если в виде ресерса получен любой другой объект кроме перечисленных
+     */
     @Override
-    public List<VkProduct> fabricMethod(Object resource) {
+    public VkProductCreator createProducts(Object resource) {
         List<VkProduct> createdVkProductList;
 
         if (resource instanceof Integer) {
@@ -54,7 +83,48 @@ public class VkProductCreator implements VkObjectCreator {
             throw new IllegalArgumentException("Illegal resource class: " + resource.getClass());
         }
 
-        return createdVkProductList;
+        vkProductList = createdVkProductList;
+        return this;
+    }
+
+    /**
+     * Возвращает список товаров у которых {@link VkProduct#productType} соответствует переданому type
+     * и {@link VkProduct#productPropertyType} соответствует переданому propertyType
+     * <br>
+     * для игнорирования одного из значений нужно передавать {@link null}
+     * <br>
+     * для получения всех товаров с группой по умолчанию оба передаваемых значения должны быть {@link null}
+     * @param type типа использования товара
+     * @param propertyType вид товара
+     * @return список продуктов vk соответствующих критериям
+     */
+    public List<VkProduct> getProductsFor(String type, String propertyType) {
+        //TODO: добавить правильные id групп
+        List<VkProduct> resultList = new ArrayList<>();
+        if (type == null && propertyType == null) {
+            for (VkProduct vkProduct : vkProductList) {
+                vkProduct.setOwnerId(Integer.parseInt(AppProperty.properties.getProperty("vk.group.id")));
+//                vkProduct.setOwnerId(1);
+                resultList.add(vkProduct);
+            }
+        } else if (propertyType == null) {
+            for (VkProduct vkProduct : vkProductList) {
+                if (vkProduct.getProductType().equals(type)) {
+                    vkProduct.setOwnerId(Integer.parseInt(AppProperty.properties.getProperty("vk.group.id")));
+//                    vkProduct.setOwnerId(2);
+                    resultList.add(vkProduct);
+                }
+            }
+        } else {
+            for (VkProduct vkProduct : vkProductList) {
+                if (vkProduct.getProductType().equals(type) && vkProduct.getProductPropertyType().equals(propertyType)) {
+                    vkProduct.setOwnerId(Integer.parseInt(AppProperty.properties.getProperty("vk.group.id")));
+//                    vkProduct.setOwnerId(3);
+                    resultList.add(vkProduct);
+                }
+            }
+        }
+        return resultList;
     }
 
     private List<VkProduct> createExistingProduct(Integer productId) {
@@ -63,6 +133,12 @@ public class VkProductCreator implements VkObjectCreator {
         return productList;
     }
 
+    /**
+     * Метод ищет ноды с именем "offer" и запускает метод создания продукта для vk если находит такую
+     * @param nodes нода для поиска описания продукта
+     * @param productList список продуктов в который будет добавленный новый продукт после его создания
+     * @return список VkProduct в который добавлен новый/созданный продукт, если это получилось сделать
+     */
     private List<VkProduct> createNewProductFromXml(NodeList nodes, ArrayList<VkProduct> productList) {
 
         if (nodes == null || nodes.getLength() == 0){
@@ -81,19 +157,19 @@ public class VkProductCreator implements VkObjectCreator {
         return productList;
     }
 
-
+    /**
+     * Метод для создания конкретного продукта, когда получена нода "offer"
+     * @param node элемент документа из которого нужно попробовать создать продкт
+     * @param productList список продуктов в который будет добавленный новый продукт после его создания
+     * @return список VkProduct в который добавлен новый/созданный продукт, если это получилось сделать
+     */
     private ArrayList<VkProduct> createProducts(Node node, ArrayList<VkProduct> productList) {
 
         if (node == null) {
             return productList;
         }
-/*
-        //TODO: выпилить, заглушка чтобы не загружать больше n объектов
-        else if (productList.size() >= 3) {
-            return productList;
-        }
-*/
-        else if (node.getNodeName().equals("offer") && node.getAttributes().getNamedItem("internal-id").getNodeValue().equals("31871")) {
+        //TODO: выпилить второе условие, заглушка чтобы загружать только 31871
+        else if (node.getNodeName().equals("offer") /*&& node.getAttributes().getNamedItem("internal-id").getNodeValue().equals("31871")*/) {
             try {
                 SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
                 SaxHandlerImplementation handler = new SaxHandlerImplementation();
@@ -102,12 +178,20 @@ public class VkProductCreator implements VkObjectCreator {
                 parser.parse(inputStreamFromNode, handler);
                 VkProduct createdProduct = new VkProduct(
                         handler.productInnerId,
+//                        this.ownerId,
                         handler.productName,
                         handler.productDescription,
                         handler.productCategoryId,
                         handler.productPrice,
-                        handler.productMainPhotoId,
-                        handler.photoIds);
+                        handler.productMainPhotoURI,
+                        handler.photosURI);
+                //утановка дополнительных параметров
+                if (handler.productType != null) {
+                    createdProduct.setProductType(handler.productType);
+                }
+                if (handler.productPropertyType != null) {
+                    createdProduct.setProductPropertyType(handler.productPropertyType);
+                }
                 productList.add(createdProduct);
 
             } catch (ParserConfigurationException | SAXException | TransformerException | IOException e) {
@@ -118,6 +202,12 @@ public class VkProductCreator implements VkObjectCreator {
         return createProducts(node.getNextSibling(), productList);
     }
 
+    /**
+     * Конвертер ноды {@link Document} в {@link InputStream} для работы парсера {@link SAXParser}
+     * @param node нода которую нужно перевести в поток для парсинга
+     * @return ноду преабразованную в поток {@link InputStream}
+     * @throws TransformerException если что-то пошло не так
+     */
     private InputStream nodeToInputStream(Node node) throws TransformerException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Result outputTarget = new StreamResult(outputStream);
@@ -127,11 +217,18 @@ public class VkProductCreator implements VkObjectCreator {
         return new ByteArrayInputStream(outputStream.toByteArray());
     }
 
+    /**
+     * Внутренний класс, используется только в {@link VkProductCreator}.
+     * Имплементация хендлера для {@link SAXParser} чтобы разобрать документ
+     * и найти элементы нужны для создания {@link VkProduct}
+     */
     private class SaxHandlerImplementation extends DefaultHandler {
 
         Integer productInnerId;
 
-        Integer productOwnerId;
+        private String productType;
+
+        private String productPropertyType;
 
         String productName;
 
@@ -145,11 +242,16 @@ public class VkProductCreator implements VkObjectCreator {
 
         List<Integer> photoIds;
 
+        String productMainPhotoURI;
+
+        List<String> photosURI;
+
         XmlTags currentElement;
 
         @Override
         public void startDocument() throws SAXException {
-            photoIds = new ArrayList<>();
+//            photoIds = new ArrayList<>();
+            photosURI = new ArrayList<>();
         }
 
         @Override
@@ -169,6 +271,12 @@ public class VkProductCreator implements VkObjectCreator {
                 case "cost-market-vk":
                     currentElement = XmlTags.price;
                     break;
+                case "type":
+                    currentElement = XmlTags.type;
+                    break;
+                case "property-type":
+                    currentElement = XmlTags.propertyType;
+                    break;
                 case "category":
                     currentElement = XmlTags.category;
                     break;
@@ -183,6 +291,15 @@ public class VkProductCreator implements VkObjectCreator {
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             switch (currentElement) {
+                case type:
+                    productType = new String(ch, start, length).trim();
+                    break;
+                case propertyType:
+                    productPropertyType = new String(ch, start, length).trim();
+                    break;
+                case category:
+                    setUpProductCategory(new String(ch, start, length).trim());
+                    break;
                 case title:
                     productName = new String(ch, start, length).trim();
                     break;
@@ -196,9 +313,16 @@ public class VkProductCreator implements VkObjectCreator {
                     productPrice = priceString.isEmpty() ? 0 : Float.parseFloat(priceString);
                     break;
                 case photo:
-                    //TODO: добавить ватермарк
-                    if (productMainPhotoId == null || photoIds.size() < 5) {
-                        String url = new String(ch, start, length).trim();
+                    if (productMainPhotoURI == null || photosURI.size() < 4) {
+                        String uri = new String(ch, start, length).trim();
+                        if (productMainPhotoURI == null) {
+                            productMainPhotoURI = uri;
+                        } else {
+                            photosURI.add(uri);
+                        }
+                    }
+/*
+                        String uri = new String(ch, start, length).trim();
                         VkImage vkImage = new VkImage(url, properties.getProperty("vk.group.id"), true, null, null, null);
                         Integer photoId = VkMethodsManager.getInstance().saveImageForProduct(vkImage);
                         if (productMainPhotoId == null) {
@@ -207,9 +331,7 @@ public class VkProductCreator implements VkObjectCreator {
                             photoIds.add(photoId);
                         }
                     }
-                    break;
-                case category:
-                    setUpProductCategory(new String(ch, start, length).trim());
+*/
                     break;
                 default:
                     break;
@@ -220,13 +342,6 @@ public class VkProductCreator implements VkObjectCreator {
         public void endElement(String uri, String localName, String qName) throws SAXException {
             currentElement = XmlTags.blank;
         }
-
-/*
-        @Override
-        public void endDocument() throws SAXException {
-            super.endDocument();
-        }
-*/
 
         /**
          * Устанавливает категорию товара в зависимоти от значения тега category
@@ -258,33 +373,6 @@ public class VkProductCreator implements VkObjectCreator {
             }
         }
 
-        //геттеры свойств продукта
-        public Integer getProductInnerId() {
-            return productInnerId;
-        }
-
-        public Integer getProductOwnerId() {
-            return productOwnerId;
-        }
-
-        public String getProductName() {
-            return productName;
-        }
-
-        public String getProductDescription() {
-            return productDescription;
-        }
-
-        public Integer getProductCategoryId() {
-            return productCategoryId;
-        }
-
-        public Float getProductPrice() {
-            return productPrice;
-        }
-
-        public Integer getProductMainPhotoId() {
-            return productMainPhotoId;
-        }
+        //тут будут геттеры свойств продукта, если понадобятся
     }
 }

@@ -4,6 +4,7 @@ import agency.realtycrimea.network.SimpleRequest;
 import agency.realtycrimea.network.VkNetworkManager;
 import agency.realtycrimea.network.XmlNetworkManager;
 import agency.realtycrimea.vk.model.VkProduct;
+import agency.realtycrimea.vk.utility.AppProperty;
 import agency.realtycrimea.vk.utility.VkProductCreator;
 import org.junit.*;
 import org.primefaces.json.JSONObject;
@@ -24,7 +25,7 @@ public class VkProductCreatorTest {
 
     @BeforeClass
     public static void init() {
-        VkAuthMethods.setToken("6e2b7011f2e30a63b0d0db1c443f690782ec4e11dda956a0f736527ffb436db95bd4a31de569712b5ad57");
+        VkAuthMethods.setToken("ff1d5eed82f14ff8326c693d896032a741db87460d172e51869e6dbfa407c0541811005312e3467f6e912");
         xmlURI = "http://www.realtycrimea.agency/exchange/export/vk-group-export.php";
     }
 
@@ -47,24 +48,27 @@ public class VkProductCreatorTest {
         Document xmlDocument = xmlNetworkManager.sendRequest(xmlRequest);
 
         VkProductCreator productCreator = new VkProductCreator();
-        vkProduct = productCreator.fabricMethod(xmlDocument);
+        List<VkProduct> productList;
+        productList = productCreator.createProducts(xmlDocument).getProductsFor(null, null);
 
-        Assert.assertTrue(vkProduct.size() != 0);
+        Assert.assertTrue(productList.size() != 0);
+        System.out.println("(null, null) size = " + productList.size());
 
-        VkProduct product = VkProductCreatorTest.vkProduct.get(0);
+        productList = productCreator.createProducts(xmlDocument).getProductsFor("аренда", null);
 
-        VkProductApiMethods.setCurrentProduct(product);
-        SimpleRequest marketAddRequest = new SimpleRequest(VkProductApiMethods.marketAdd);
+        Assert.assertTrue(productList.size() != 0);
+        System.out.println("(аренда, null) size = " + productList.size());
 
-        JSONObject marketAddResponse = manager.sendRequest(marketAddRequest);
-        product.applyServerResponse(marketAddResponse);
+        productList = productCreator.createProducts(xmlDocument).getProductsFor("аренда", "жилая");
 
-        System.out.println(product);
+        Assert.assertTrue(productList.size() != 0);
+        System.out.println("(аренда, жилая) size = " + productList.size());
 
         System.out.println("End VkProduct create test.");
     }
 
     @Test
+    @Ignore("move test from here")
     public void deleteTest() {
 
         for (VkProduct product : vkProduct) {

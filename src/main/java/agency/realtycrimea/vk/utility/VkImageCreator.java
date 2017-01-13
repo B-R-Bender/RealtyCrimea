@@ -11,7 +11,7 @@ import java.util.List;
 public class VkImageCreator implements VkObjectCreator {
 
     @Override
-    public List<VkImage> fabricMethod(Object resource) {
+    public VkImageCreator createProducts(Object resource) {
         return null;
     }
 

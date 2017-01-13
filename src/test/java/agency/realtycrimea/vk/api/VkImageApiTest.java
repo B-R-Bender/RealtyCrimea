@@ -22,7 +22,7 @@ public class VkImageApiTest {
 
     @BeforeClass
     public static void init() {
-        VkAuthMethods.setToken("6e2b7011f2e30a63b0d0db1c443f690782ec4e11dda956a0f736527ffb436db95bd4a31de569712b5ad57");
+        VkAuthMethods.setToken("4f81ae3bf50b7e1352015486e3fc75d3d7f4298ca15695defb75e68260e2f1f703a5b99821f2023ee6bf5");
         photoURI = "http://images4.fanpop.com/image/photos/24500000/Bender-Wallpaper-bender-24507237-1280-960.jpg";
     }
 

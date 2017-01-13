@@ -4,9 +4,7 @@ import agency.realtycrimea.network.SimpleRequest;
 import agency.realtycrimea.network.VkNetworkManager;
 import agency.realtycrimea.vk.model.VkImage;
 import agency.realtycrimea.vk.model.VkProduct;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.primefaces.json.JSONObject;
-import sun.net.util.URLUtil;
 
 /**
  * Created by Bender on 09.12.2016.
@@ -72,6 +70,32 @@ public class VkMethodsManager {
     }
 
     /**
+     * Загружает фотографии по URI которые берет из {@link VkProduct#mainPhotoURI} и {@link VkProduct#photosURI}
+     * и заполняет загруженными IDшниками {@link VkProduct#mainPhotoId} и {@link VkProduct#photoIds}
+     * @param product для которого нужно загрузить фото
+     */
+    private void loadPhotosForProduct(VkProduct product) {
+        VkImage vkProductMainPhoto = new VkImage(product.getMainPhotoURI(),
+                                                 product.getOwnerId().toString(),
+                                                 true,
+                                                 null, null, null);
+        Integer vkProductMainPhotoId = VkMethodsManager.getInstance().saveImageForProduct(vkProductMainPhoto);
+        product.setMainPhotoId(vkProductMainPhotoId);
+
+        if (product.getPhotosURI() != null) {
+            product.getPhotoIds().clear();
+            for (String photoURI : product.getPhotosURI()) {
+                VkImage vkProductPhoto = new VkImage(photoURI,
+                        product.getOwnerId().toString(),
+                        false,
+                        null, null, null);
+                Integer vkProductPhotoId = VkMethodsManager.getInstance().saveImageForProduct(vkProductPhoto);
+                product.getPhotoIds().add(vkProductPhotoId);
+            }
+        }
+    }
+
+    /**
      * Добавляет в VK продукт
      * @param product продукт для добавления
      * @return true если после добавления есть market_item_id, false в противном случае
@@ -80,14 +104,13 @@ public class VkMethodsManager {
         if (product == null) {
             throw new IllegalArgumentException("Product can not be null!");
         }
-
-        VkNetworkManager manager = new VkNetworkManager();
+        loadPhotosForProduct(product);
         VkProductApiMethods.setCurrentProduct(product);
+
         SimpleRequest marketAddRequest = new SimpleRequest(VkProductApiMethods.marketAdd);
+        JSONObject marketAddResponse = new VkNetworkManager().sendRequest(marketAddRequest);
 
-        JSONObject marketAddResponse = manager.sendRequest(marketAddRequest);
         product.applyServerResponse(marketAddResponse);
-
         return marketAddResponse.has("market_item_id");
     }
 
