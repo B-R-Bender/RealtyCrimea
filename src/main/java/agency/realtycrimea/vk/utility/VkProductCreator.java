@@ -47,19 +47,7 @@ public class VkProductCreator implements VkObjectCreator {
         blank;
     }
 
-//    private final Integer ownerId;
-    
     private List<VkProduct> vkProductList;
-
-/*
-    private VkProductCreator() {
-        ownerId = null;
-    }
-
-    public VkProductCreator(Integer ownerId) {
-        this.ownerId = ownerId;
-    }
-*/
 
     /**
      * Фабрика для создания продуктов vk. На вход получет ресурс который может быть:
@@ -215,6 +203,13 @@ public class VkProductCreator implements VkObjectCreator {
         t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         t.transform(new DOMSource(node), outputTarget);
         return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    //геттеры и сеттеры
+
+
+    public List<VkProduct> getVkProductList() {
+        return vkProductList;
     }
 
     /**

@@ -138,7 +138,10 @@ public class VkImage extends VkAbstractObject {
      * @param response ответ сервера в виде JSON объекта
      */
     public void applyServerResponse(JSONObject response) {
-        if (response.has("upload_url")) {
+        if (response == null) {
+            //TODO: ошибку в лог
+            System.out.println("Нет ответа от сервера");
+        } else if (response.has("upload_url")) {
             addUploadServer(response.getString("upload_url"));
         } else if (response.has("server")) {
             int server = response.getInt("server");

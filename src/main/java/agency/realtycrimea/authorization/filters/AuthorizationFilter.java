@@ -38,9 +38,16 @@ public class AuthorizationFilter implements Filter {
                 VkAuthMethods.setVkUserId(vkApiResponseObject.getLong("user_id"));
                 VkAuthMethods.setTokenExpiresIn(new Date(System.currentTimeMillis() + vkApiResponseObject.getLong("expires_in")*1000));
                 //TODO: сообщение об успершной авторизации
+                request.getSession().setAttribute("isLogged", "true");
                 response.sendRedirect(request.getContextPath() + "/main.xhtml");
             }
         }
+
+        Object isLogged = request.getSession().getAttribute("isLogged");
+        if ((isLogged == null || !isLogged.equals("true")) && !request.getRequestURI().contains("index.xhtml")) {
+            response.sendRedirect(request.getContextPath() + "/index.xhtml");
+        }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

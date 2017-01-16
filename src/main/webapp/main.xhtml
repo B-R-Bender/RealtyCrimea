@@ -14,40 +14,34 @@
 <h:body>
     <h:form>
 
-        <p:layout id="mainLayout">
-            <p:layoutUnit position="north"
-                          header="Основная штука"
-                          resizable="false" closable="false" collapsible="true">
-                <div style="text-align: center">
-                    <p:panelGrid id="vkGridPanel" columns="2" style="!important;margin: 0 auto">
-                        <f:facet name="header">
-                            <h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>
-                        </f:facet>
-                        <p:commandButton id="getCodeButton"
-                                         ajax="false"
-                                         value="#{messages['common.buttons.yes']} -> "
-                                         actionListener="#{loginController.NOP}"/>
-                        <p:button id="button3" value="1321"/>
-                    </p:panelGrid>
-                </div>
-            </p:layoutUnit>
+        <div style="float:left;width:100%;min-height:50%;_height:50%;text-align: center">
+                <p:panelGrid id="vkGridPanel" columns="2" style="!important;margin: 0 auto; border: 2px;">
+                    <f:facet name="header">
+                        <h:graphicImage id="vkAppLogo" library="images" name="vk-app.png"/>
+                    </f:facet>
+                    <p:commandButton id="getCodeButton"
+                                     ajax="false"
+                                     value="#{messages['common.buttons.yes']} -> "
+                                     actionListener="#{mainPage.NOP}"/>
+                    <p:button id="button3" value="1321"/>
+                </p:panelGrid>
+        </div>
 
-            <p:layoutUnit position="west"
-                          header="Меню управления"
-                          rendered="#{loginController.isVkAuthorized()}"
-                          resizable="true" closable="false" collapsible="true">
-                <p:spacer height="10px"/>
-                <p:commandButton id="redirectStart"
-                                 ajax="false"
-                                 value="#{messages['common.buttons.start']} -> "
-                                 actionListener="#{loginController.start()}"/>
-                <p:spacer height="10px"/>
-            </p:layoutUnit>
+        <div style="float:left;width:10%;min-height:50%;_height:50%;">
+            <p:spacer height="10px"/>
+            <p:commandButton id="start"
+                             value="#{messages['common.buttons.start']} -> "
+                             actionListener="#{mainPage.loadProducts()}"
+                             update="productDataTable"/>
+            <p:spacer height="10px"/>
+        </div>
 
-            <p:layoutUnit position="center">
+        <div style="float:left;width:90%;min-height:50%;_height:50%;">
                 <p:dataTable id="productDataTable"
+                             value="#{mainPage.loadedProductList}"
+                             var="product"
                              paginator="true"
-                             rendered="#{loginController.isVkAuthorized()}"
+                             rendered="#{mainPage.isVkAuthorized()}"
                              paginatorTemplate="{CurrentPageReport}
                                                 {FirstPageLink}
                                                 {PreviousPageLink}
@@ -56,26 +50,25 @@
                                                 {LastPageLink}
                                                 {RowsPerPageDropdown}">
                     <p:column headerText="Base id">
-                        111
+                        #{product.innerProductId}
                     </p:column>
                     <p:column headerText="VK id">
-                        111
+                        #{product.productId}
                     </p:column>
                     <p:column headerText="Name">
-                        111
+                        #{product.name.length() >= 50 ? product.name.substring(0, 50) : product.name}
                     </p:column>
                     <p:column headerText="Price">
-                        111
+                        #{product.price}
                     </p:column>
                     <p:column headerText="Descr">
-                        111
+                        #{product.description.length() >= 50 ? product.description.substring(0, 50) : product.description}
                     </p:column>
                     <p:column headerText="Is changed">
-                        111
+                        mock
                     </p:column>
                 </p:dataTable>
-            </p:layoutUnit>
-        </p:layout>
+        </div>
 
     </h:form>
 </h:body>

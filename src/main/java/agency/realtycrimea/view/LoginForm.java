@@ -11,7 +11,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Created by Bender on 30.11.2016.
@@ -59,21 +58,22 @@ public class LoginForm {
     public void login() {
         if (userName.equals("Dimamus")&&password.equals("")) {
             isLoggedIn = true;
-            obtainVkCode();
+            processVkAuthorization();
         } else {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка.", "Ошибка авторизации"));
         }
     }
 
-    public void obtainVkCode() {
+    public void processVkAuthorization() {
         try {
             ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
             externalContext.redirect(VkAuthMethods.getCode.getExactMethod());
         } catch (IOException e) {
             //TODO: add log
+            System.out.println(e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка.", "Ошибка авторизации"));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка", "Ошибка авторизации"));
         }
     }
 
@@ -88,14 +88,6 @@ public class LoginForm {
 //        VkProductCreator productCreator = new VkProductCreator();
 //        List<VkProduct> vkProduct = productCreator.createProducts(xmlDocument);
     }
-
-    public boolean isVkAuthorized() {
-        return VkAuthMethods.isCodeObtained();
-    }
-
-    public void NOP(){
-        System.out.println("test");
-    };
 
     //геттеры и сеттеры
     public String getUserName() {
